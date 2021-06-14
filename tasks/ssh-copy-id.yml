@@ -1,0 +1,28 @@
+---
+  - name: Fail if requirement package does not exist
+    command: rpm -q sshpass
+    register: sshpass_pkg_exist
+    failed_when: sshpass_pkg_exist.rc == 1
+
+  - name: Check if SSH public key exist
+    stat:
+      path: "{{ target_vm_public_key }}"
+    register: ssh_public_key_exist
+    failed_when: not ssh_public_key_exist.stat.exists
+
+  - name: Inject SSH public key into remote system
+    block:
+      - name: Delete hosts from known hosts
+        lineinfile:
+          path: ~/.ssh/known_hosts
+          state: absent
+          regexp: "{{ item.hostname }}"
+        with_items:
+          - "{{ target_vms }}"
+
+      - name: Copy SSH public key to target_vms
+        shell: "sshpass -p {{ item.password | defaul(target_vm_password) }} ssh-copy-id -o StrictHostKeyChecking=no -p {{ item.port | default(target_vm_port) }} -i {{ lookup('file', '{{ item.public_key | default(target_vm_public_key) }}') }} {{ item.username | default(target_vm_username) }}@{{ item.hostname | default(item) }}; sleep 1"
+        with_items:
+          - "{{ target_vms }}"
+    delegate_to: localhost
+    when: target_vms is defined

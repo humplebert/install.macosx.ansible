@@ -1,0 +1,33 @@
+---
+#overwrite with values in variables/custom.yml
+
+ssh_keys_dir: "{{ ansible_env.HOME }}/.ssh"
+ssh_keys_label: example
+ssh_keys_password: example
+
+ssh_keys_pairs:
+  default:
+    type: rsa
+    bits: 4096
+    path: "{{ ssh_keys_dir }}/id_rsa"
+    email: "example@example.com"
+    password: "example"
+    github:
+      - { label: "{{ ssh_keys_label }}", token: example }
+    bitbucket:
+      - { label: "{{ ssh_keys_label }}", password: example, user: example }
+
+ssh_keys_config:
+  - host: "example"
+    config:
+      - [ "HostName", "0.0.0.0" ]
+      - [ "Port", "1234" ]
+      - [ "User", "example"]
+      - [ "IdentityFile", "{{ ssh_keys_pairs.default.path }}"]
+
+target_vm_public_key: "{{ ssh_keys_pairs.default.path }}"
+target_vm_password: "example"
+target_vm_username: "example"
+target_vm_port: "1234"
+target_vms:
+  - "0.0.0.0"
