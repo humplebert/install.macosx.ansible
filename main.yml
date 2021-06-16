@@ -30,7 +30,7 @@
     - role: geerlingguy.mac.dock
       when: configure_dock
       tags: ['dock']
-    - role: lwalley.ssh-keys
+    - role: humplebert.ansible_role_ssh_keys
       when: configure_ssh
       tags: ['ssh']
 
