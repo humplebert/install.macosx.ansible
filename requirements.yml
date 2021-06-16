@@ -2,7 +2,7 @@
 roles:
   - name: elliotweiser.osx-command-line-tools
   - name: geerlingguy.dotfiles
-  - name: lwalley.ssh-keys
+  - name: humplebert.ansible_role_ssh_keys
 
 collections:
   - name: geerlingguy.mac
